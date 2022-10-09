@@ -24,10 +24,20 @@ A summary based on online courses and official react documentation: (<https://re
 
 - Unlike browser DOM elements, React elements are plain objects, and are cheap to create. React DOM takes care of updating the DOM to match the React elements.
 - Elements are what components are “made of”
-- ```<div id="root"></div>```
-  - We call this a “root” DOM node because everything inside it will be managed by React DOM.
-    - To render a React element, first pass the DOM element to ReactDOM.createRoot(), then pass the React element to root.render():
-    - ```const root = ReactDOM.createRoot(document.getElementById('root'));const element = <h1>Hello, world</h1>;root.render(element);```
+
+```html
+    <div id="root"></div>
+```
+
+- We call this a “root” DOM node because everything inside it will be managed by React DOM.
+  - To render a React element, first pass the DOM element to ReactDOM.createRoot(), then pass the React element to root.render():
+
+    ```javascript
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    const element = <h1>Hello, world</h1>;
+    root.render(element);
+    ```
 
 - React elements are immutable. Once you create an element, you can’t change its children or attributes.
 - React Only Updates What’s Necessary: React DOM compares the element and its children to the previous one, and only applies the DOM updates necessary to bring the DOM to the desired state.
