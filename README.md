@@ -254,3 +254,47 @@ class Clock extends React.Component {
 3. State Updates are Merged
     - When you call `setState()`, React merges the object you provide into the current state.
     - For example, your state may contain several independent variables and you can update them independently with separate `setState()` calls
+
+## The Data Flows Down
+
+- Neither parent nor child components can know if a certain component is stateful or stateless
+- State is often called local or encapsulated. It is not accessible to any component other than the one that owns and sets it.
+- A component may choose to pass its state down as props to its child components
+
+```javascript
+function FormattedDate(props) {
+  return <h2>It is {props.date.toLocaleTimeString()}.</h2>;
+}
+
+class Clock extends React.Component {
+    //...
+    //...
+    //...
+    render() {
+        return (
+        <div>
+            <h1>Hello, world!</h1>
+            <FormattedDate date={this.state.date} />
+        </div>
+        );
+    }
+}
+```
+
+- This is commonly called a “top-down” or “unidirectional” data flow. Any state is always owned by some specific component, and any data or UI derived from that state can only affect components “below” them in the tree.
+- To show that all components are truly isolated, we can create an App component that renders three <Clock>:
+
+```javascript
+function App() {
+  return (
+    <div>
+      <Clock />
+      <Clock />
+      <Clock />
+    </div>
+  );
+}
+```
+
+- Each Clock sets up its own timer and updates independently.
+- You can use stateless components inside stateful components, and vice versa.
