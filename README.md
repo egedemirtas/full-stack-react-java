@@ -46,4 +46,52 @@ A summary based on online courses and official react documentation: (<https://re
 
 ### Function Components
 
-```function Welcome(props) {return <h1>Hello, {props.name}</h1>;}```
+```javascript
+function Welcome(props) {
+    return <h1>Hello, {props.name}</h1>;
+}
+```
+
+- This function is a valid React component because it accepts a single “props”(properties) object argument with data and returns a React element.
+- We call such components “function components” because they are literally JavaScript functions.
+
+### Class Components
+
+- You can also use an ES6 class to define a component:
+
+```javascript
+class Welcome extends React.Component {
+  render() {
+    return <h1>Hello, {this.props.name}</h1>;
+  }
+}
+```
+
+#### Rendering Componenets
+
+- elements can also represent user-defined components:
+
+```javascript
+function Welcome(props) {
+  return <h1>Hello, {props.name}</h1>;
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+const element = <Welcome name="Sara" />;
+root.render(element);
+```
+
+1. We call `root.render()` with the `<Welcome name="Sara" />` element.
+2. React calls the Welcome component with {name: 'Sara'} as the props.
+3. Our Welcome component returns a `<h1>Hello, Sara</h1>` element as the result.
+4. React DOM efficiently updates the DOM to match `<h1>Hello, Sara</h1>`
+
+> Note: Always start component names with a capital letter.
+
+## Props
+
+- Props are Read-Only
+- Whether you declare a component as a function or a class, it must never modify its own props.
+- All React components must act like pure functions with respect to their props.
+
+> Pure functions: they do not attempt to change their inputs, and always return the same result for the same inputs.
