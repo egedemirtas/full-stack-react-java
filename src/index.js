@@ -4,7 +4,9 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// To render a React element, first pass the DOM element to ReactDOM.createRoot()
 const root = ReactDOM.createRoot(document.getElementById('root'));
+// then pass the React element to root.render()
 root.render(
   <React.StrictMode>
     <App />
