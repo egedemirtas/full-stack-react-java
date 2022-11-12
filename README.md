@@ -152,7 +152,7 @@ class Clock extends React.Component {
 }
 ```
 
-## Adding Lifecycle Methods to a Class
+### Adding Lifecycle Methods to a Class
 
 - it’s very important to free up resources taken by the components when they are destroyed.
 - We want to set up a timer whenever the Clock is rendered to the DOM for the first time. This is called “mounting” in React.
@@ -203,7 +203,7 @@ class Clock extends React.Component {
 6. This time, `this.state.date` in the `render()` method will be different, and so the render output will include the updated time. React updates the DOM accordingly.
 7. If the Clock component is ever removed from the DOM, React calls the `componentWillUnmount()` lifecycle method so the timer is stopped.
 
-## Using State Correctly
+### Using State Correctly
 
 1. Do Not Modify State Directly
     - this will not re-render a component:
@@ -255,7 +255,7 @@ class Clock extends React.Component {
     - When you call `setState()`, React merges the object you provide into the current state.
     - For example, your state may contain several independent variables and you can update them independently with separate `setState()` calls
 
-## The Data Flows Down
+### The Data Flows Down
 
 - Neither parent nor child components can know if a certain component is stateful or stateless
 - State is often called local or encapsulated. It is not accessible to any component other than the one that owns and sets it.
@@ -282,7 +282,7 @@ class Clock extends React.Component {
 ```
 
 - This is commonly called a “top-down” or “unidirectional” data flow. Any state is always owned by some specific component, and any data or UI derived from that state can only affect components “below” them in the tree.
-- To show that all components are truly isolated, we can create an App component that renders three <Clock>:
+- To show that all components are truly isolated, we can create an App component that renders three `<Clock>`:
 
 ```javascript
 function App() {
@@ -298,3 +298,141 @@ function App() {
 
 - Each Clock sets up its own timer and updates independently.
 - You can use stateless components inside stateful components, and vice versa.
+
+## Handling Events
+
+- Have to pass function with JSX as event handler (need to pass string in HTML):
+
+ ```javascript
+<button onClick={activateLasers}>
+  Activate Lasers
+</button>
+```
+
+- Have to call `e.preventDefault();` to prevent default behaviour. (return false in HTML)
+
+- You don't need to call addEventListener to add listeners to elements.
+
+- If you are using class components, event handler should a method in that class.
+
+### Binding
+
+```javascript
+class Toggle extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {isToggleOn: true};
+
+    // This binding is necessary to make `this` work in the callback
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    this.setState(prevState => ({
+      isToggleOn: !prevState.isToggleOn
+    }));
+  }
+
+  render() {
+    return (
+      <button onClick={this.handleClick}>
+        {this.state.isToggleOn ? 'ON' : 'OFF'}
+      </button>
+    );
+  }
+}
+```
+
+- In JavaScript, class methods are not bound by default. If you forget to bind `this.handleClick` and pass it to `onClick`, this will be undefined when the function is actually called. Generally, if you refer to a method without () after it, such as `onClick={this.handleClick}`, you should bind that method.
+
+- There are two ways you can get around this.
+
+1. You can use public class fields syntax to correctly bind callbacks:
+
+    ```javascript
+    class LoggingButton extends React.Component {
+      // This syntax ensures `this` is bound within handleClick.
+      handleClick = () => {
+        console.log('this is:', this);
+      };
+      render() {
+        return (
+          <button onClick={this.handleClick}>
+            Click me
+          </button>
+        );
+      }
+    }
+    ```
+
+2. If you aren’t using class fields syntax, you can use an arrow function in the callback:
+
+  ```javascript
+  class LoggingButton extends React.Component {
+    handleClick() {
+      console.log('this is:', this);
+    }
+
+    render() {
+      // This syntax ensures `this` is bound within handleClick
+      return (
+        <button onClick={() => this.handleClick()}>
+          Click me
+        </button>
+      );
+    }
+  }
+  ```
+
+- Performance problem: The problem with this syntax is that a different callback is created each time the LoggingButton renders. In most cases, this is fine. However, if this callback is passed as a prop to lower components, those components might do an extra re-rendering.
+
+### Passing Arguments to Event Handlers
+
+- Either of the following would work:
+
+```javascript
+<button onClick={(e) => this.deleteRow(id, e)}>Delete Row</button>
+<button onClick={this.deleteRow.bind(this, id)}>Delete Row</button>
+```
+
+- In both cases, the e argument (representing the React event) will be passed as a second argument after the ID. With an arrow function, we have to pass it explicitly, but with bind any further arguments are automatically forwarded.
+
+## Lists and Keys
+
+### Lists
+
+```javascript
+function NumberList(props) {
+  const numbers = props.numbers;
+  const listItems = numbers.map((number) => //need to add: key={number.toString()} to li element
+    <li>
+      {number}
+    </li>
+  );
+  return (
+    <ul>{listItems}</ul>
+  );
+}
+
+const numbers = [1, 2, 3, 4, 5];
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<NumberList numbers={numbers} />);
+```
+
+- When you run this code, you’ll be given a warning that a key should be provided for list items.
+
+- A “key” is a special string attribute you need to include when creating lists of elements.
+
+### Keys
+
+- Keys help React identify which items have changed, are added, or are removed.
+
+- The best way to pick a key is to use a string that uniquely identifies a list item among its siblings.
+
+- Using indexes for keys is not recommened; the order of items may change. This can negatively impact performance and may cause issues with component state.
+
+- Keys used within arrays should be unique among their siblings. However, they don’t need to be globally unique.
+
+- Keys serve as a hint to React but they don’t get passed to your components. If you need the same value in your component, pass it explicitly as a prop with a different name.
+
+## Forms
